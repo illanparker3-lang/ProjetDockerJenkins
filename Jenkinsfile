@@ -52,11 +52,12 @@ pipeline {
             }
         }
 
-stage('Deploy') {
-    steps {
-        echo "Deploy ignoré temporairement : authentification Docker Hub à configurer côté Jenkins"
+        stage('Deploy') {
+            steps {
+                echo "Deploy ignoré temporairement : authentification Docker Hub à configurer côté Jenkins"
+            }
+        }
     }
-}
 
     post {
         always {
