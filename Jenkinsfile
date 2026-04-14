@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "sum-image"
-        CONTAINER_ID = ""
+        CONTAINER_NAME = "sum-container"
         DIR_PATH = "."
         TEST_FILE_PATH = "test_variables.txt"
         DOCKERHUB_REPO = "illanparker3/sum-image"
@@ -18,17 +18,9 @@ pipeline {
 
         stage('Run') {
             steps {
-                script {
-                    def output = bat(
-                        script: 'docker run -d %IMAGE_NAME%',
-                        returnStdout: true
-                    ).trim()
-
-                    def lines = output.split('\n')
-                    env.CONTAINER_ID = lines[-1].trim()
-
-                    echo "Conteneur lancé : ${env.CONTAINER_ID}"
-                }
+                bat "docker rm -f %CONTAINER_NAME% || exit 0"
+                bat "docker run -d --name %CONTAINER_NAME% %IMAGE_NAME%"
+                bat "docker ps -a"
             }
         }
 
@@ -44,12 +36,11 @@ pipeline {
                         def expectedSum = vars[2].toFloat()
 
                         def output = bat(
-                            script: "docker exec ${env.CONTAINER_ID} python /app/sum.py ${arg1} ${arg2}",
+                            script: "@docker exec %CONTAINER_NAME% python /app/sum.py ${arg1} ${arg2}",
                             returnStdout: true
                         ).trim()
 
-                        def resultLines = output.split('\n')
-                        def result = resultLines[-1].trim().toFloat()
+                        def result = output.readLines()[-1].trim().toFloat()
 
                         if (result == expectedSum) {
                             echo "Test réussi : ${arg1} + ${arg2} = ${result}"
@@ -71,12 +62,8 @@ pipeline {
 
     post {
         always {
-            script {
-                if (env.CONTAINER_ID?.trim()) {
-                    bat "docker stop ${env.CONTAINER_ID}"
-                    bat "docker rm ${env.CONTAINER_ID}"
-                }
-            }
+            bat "docker stop %CONTAINER_NAME% || exit 0"
+            bat "docker rm %CONTAINER_NAME% || exit 0"
         }
     }
 }
