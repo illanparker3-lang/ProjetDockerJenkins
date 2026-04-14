@@ -6,7 +6,7 @@ pipeline {
         CONTAINER_ID = ""
         DIR_PATH = "."
         TEST_FILE_PATH = "test_variables.txt"
-        DOCKERHUB_REPO = "ton_username_dockerhub/sum-image"
+        DOCKERHUB_REPO = "illanparker3/sum-image"
     }
 
     stages {
