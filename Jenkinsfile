@@ -52,13 +52,11 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
-            steps {
-                bat "docker tag %IMAGE_NAME% %DOCKERHUB_REPO%"
-                bat "docker push %DOCKERHUB_REPO%"
-            }
-        }
+stage('Deploy') {
+    steps {
+        echo "Deploy ignoré temporairement : authentification Docker Hub à configurer côté Jenkins"
     }
+}
 
     post {
         always {
